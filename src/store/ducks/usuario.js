@@ -1,26 +1,25 @@
 import Immutable from 'seamless-immutable';
 
 export const Types = {
-  POST: 'usuario/POST',
+  GET: 'usuario/GET',
 };
 
 const initialState = Immutable({
-  data: [],
+  user: {},
 });
 
 export default function Usuario(state = initialState, action) {
   switch (action.type) {
-    case Types.POST:
-      return { ...state };
+    case Types.GET:
+      return { user };
     default:
       return state;
   }
 }
 
 export const Creators = {
-  usuarioPost: data => ({
-    type: Types.POST,
-    payload: { data },
+  usuarioGet: data => ({
+    type: Types.GET,
+    payload: { user },
   }),
-
 };
