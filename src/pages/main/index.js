@@ -9,9 +9,12 @@ import {
   Text,
   Alert,
 } from 'react-native';
-import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
 import styles from './styles';
+//import firebase from 'react-native-firebase';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Creators as UsuarioActions } from 'store/ducks/usuario';
 
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 
@@ -21,7 +24,7 @@ class Main extends Component {
     senha: '',
   };
 
-  login = async () => {
+  login = () => {
     if (!this.state.login || !this.state.senha) {
       Alert.alert(
         'Login Incorreto',
@@ -31,13 +34,38 @@ class Main extends Component {
     }
 
     const { login, senha } = this.state;
+    this.props.UsuarioActions.getUserLogin(login, senha);
 
+    console.tron.log('retorno');
+    console.tron.log(this.props.usuario);
+
+    if(this.props.usuario.erro !== "") {
+      if (this.props.usuario.erro.code === 'auth/wrong-password') {
+        Alert.alert(
+          'Senha Incorreta',
+          'Favor verificar a senha informada.',
+        ); 
+        return
+      } else {
+        Alert.alert(
+          'Login Incorreto',
+          'Usuário não cadastrado.',
+        );
+        return
+      }
+    } else {
+      this.props.navigation.navigate('Perfil');
+    }
+
+    /*
     try {
       const user = await firebase.auth()
         .signInAndRetrieveDataWithEmailAndPassword(login, senha);
 
       this.props.navigation.navigate('Perfil');
     } catch (err) {
+      console.tron.log('err');
+      console.tron.log(err);
       if (err.code === 'auth/wrong-password') {
         Alert.alert(
           'Senha Incorreta',
@@ -49,10 +77,14 @@ class Main extends Component {
           'Usuário não cadastrado.',
         );
       }
-    }
+    } 
+    */
+    
   }
 
   render() {
+    console.tron.log('render');
+    console.tron.log(this.props.usuario);
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -97,6 +129,7 @@ class Main extends Component {
     );
   }
 }
+
 /*
 Main.propTypes = {
   navigation: PropTypes.shape({
@@ -104,4 +137,15 @@ Main.propTypes = {
   }).isRequired,
 };
 */
-export default Main;
+
+const mapStateToProps = state => ({
+  usuario: state.usuario,
+});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    UsuarioActions: bindActionCreators(UsuarioActions, dispatch),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

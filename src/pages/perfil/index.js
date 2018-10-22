@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import styles from './styles';
 
 const Perfil = ({ navigation }) => {
-  console.tron.log(navigation);
+ // console.tron.log(navigation);
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />

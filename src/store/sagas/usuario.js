@@ -1,15 +1,19 @@
 import { call, put } from 'redux-saga/effects';
-import api from 'services/api';
+import firebase from 'react-native-firebase';
+import { Creators as UsuarioActions } from 'store/ducks/usuario';
 
-import { Creators as ProductsActions } from 'store/ducks/products';
-
-export function* loginUsuario(action) {
+export function* getUserLogin(action) {
   try {
-    const response = yield call(api.get, `/category_products/${action.payload.category}`);
-    console.tron.log(response);
-    yield put(ProductsActions.getProduSuccess(response.data.products));
+    const auth = firebase.auth()
+    const result = yield call(
+      [auth, auth.signInAndRetrieveDataWithEmailAndPassword],
+      action.payload.login,
+      action.payload.senha
+    )
+    yield put(UsuarioActions.getUserLoginSuccess(result));
   } catch (err) {
-    // yield put(ProductsActions.searchFailure('Erro ao buscar músicas'));
-    console.tron.log('err');
+    console.tron.log('erro saga');
+    console.tron.log(err);
+    yield put(UsuarioActions.getUserLoginFailed(err.code));
   }
 }
