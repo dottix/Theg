@@ -9,10 +9,15 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { CheckBox } from 'react-native-elements';
 import styles from './styles';
+
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Creators as UsuarioActions } from 'store/ducks/usuario';
 
 class Cadastro extends Component {
   static propTypes = {
@@ -184,7 +189,8 @@ class Cadastro extends Component {
       );
       return      
     }
-    
+
+    this.props.UsuarioActions.postUserLogin(this.state.email, this.state.senha);
   }
 
   render() {
@@ -290,6 +296,10 @@ class Cadastro extends Component {
             onChangeText={confSenha => this.setState({ confSenha })}
           />
 
+          { this.props.usuario.erro
+          ? <Text style={styles.titleErro}>E-mail já está sendo usado.</Text>
+          : null}
+          
           <Text style={styles.textPerfil}>Perfil desejado</Text>
           <View style={styles.box}>
             <CheckBox
@@ -327,7 +337,9 @@ class Cadastro extends Component {
               <Text style={styles.titleCan}>Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => this.submit()} style={styles.buttonConf}>
-              <Text style={styles.titleConf}>Confirmar</Text>
+              { this.props.usuario.loading
+              ? <ActivityIndicator size="small" color="#FFF" style={styles.loading}/>
+              : <Text style={styles.titleConf}>Confirmar</Text>}
             </TouchableOpacity>
           </View>
         </View>
@@ -336,4 +348,14 @@ class Cadastro extends Component {
   }
 }
 
-export default Cadastro;
+const mapStateToProps = state => ({
+  usuario: state.usuario,
+});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    UsuarioActions: bindActionCreators(UsuarioActions, dispatch),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cadastro);

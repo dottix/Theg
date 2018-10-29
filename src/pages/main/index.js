@@ -8,10 +8,11 @@ import {
   TouchableOpacity,
   Text,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import styles from './styles';
-//import firebase from 'react-native-firebase';
+import firebase from 'react-native-firebase';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Creators as UsuarioActions } from 'store/ducks/usuario';
@@ -39,24 +40,6 @@ class Main extends Component {
     console.tron.log('retorno');
     console.tron.log(this.props.usuario);
 
-    if(this.props.usuario.erro !== "") {
-      if (this.props.usuario.erro.code === 'auth/wrong-password') {
-        Alert.alert(
-          'Senha Incorreta',
-          'Favor verificar a senha informada.',
-        ); 
-        return
-      } else {
-        Alert.alert(
-          'Login Incorreto',
-          'Usuário não cadastrado.',
-        );
-        return
-      }
-    } else {
-      this.props.navigation.navigate('Perfil');
-    }
-
     /*
     try {
       const user = await firebase.auth()
@@ -82,8 +65,16 @@ class Main extends Component {
     
   }
 
+  componentDidUpdate() {
+    if(this.props.usuario.data.user){
+      this.props.navigation.navigate('Perfil');
+    }
+  }
+
   render() {
-    console.tron.log('render');
+    console.tron.log(firebase);
+    const base = firebase.database(); 
+    console.tron.log(base);
     console.tron.log(this.props.usuario);
     return (
       <View style={styles.container}>
@@ -118,8 +109,13 @@ class Main extends Component {
           />
         </View>
         <View style={styles.formConclui}>
+            { this.props.usuario.erro
+            ? <Text style={styles.titleErro}>Login ou senha incorreto</Text>
+            : null}
           <TouchableOpacity onPress={this.login} style={styles.buttonAces}>
-            <Text style={styles.titleAces}>Acessar</Text>
+            { this.props.usuario.loading
+            ? <ActivityIndicator size="small" color="#FFF" style={styles.loading}/>
+            : <Text style={styles.titleAces}>Acessar</Text>}
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this.props.navigation.navigate('Cadastro')} style={styles.buttonInsc}>
             <Text style={styles.titleInsc}>INSCREVER-SE</Text>

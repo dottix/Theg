@@ -10,12 +10,30 @@ export function* getUserLogin(action) {
       action.payload.login,
       action.payload.senha
     )
-    yield put(UsuarioActions.getUserLoginSuccess(result));
+    yield put(UsuarioActions.userLoginSuccess(result));
   } catch (err) {
     console.tron.log('erro saga');
     console.tron.log(err);
-    yield put(UsuarioActions.getUserLoginFailed(err.code));
+    yield put(UsuarioActions.userLoginFailed(err.code));
   }
 }
 
+export function* postUserLogin(action) {
+  try {
+    const create = firebase.auth();
+    const result = yield call(
+      [create, create.createUserAndRetrieveDataWithEmailAndPassword],
+      action.payload.login,
+      action.payload.senha
+    )
+
+    
+
+    yield put(UsuarioActions.userLoginSuccess(result));
+  } catch (err) {
+    console.tron.log('erro saga');
+    console.tron.log(err);
+    yield put(UsuarioActions.userLoginFailed(err.code));
+  }
+}
 

@@ -2,12 +2,14 @@ import Immutable from 'seamless-immutable';
 
 export const Types = {
   GET_LOGIN: 'usuario/GET_LOGIN',
-  GET_LOGIN_SUCCESS: 'usuario/GET_LOGIN_SUCCESS',
-  GET_LOGIN_FAILED: 'usuario/GET_LOGIN_FAILED',
+  LOGIN_SUCCESS: 'usuario/LOGIN_SUCCESS',
+  LOGIN_FAILED: 'usuario/LOGIN_FAILED',
+  POST_LOGIN: 'usuario/POST_LOGIN',
 };
 
 const initialState = Immutable({
   data: {},
+  user: {},
   erro: '',
   loading: false,
 });
@@ -18,11 +20,13 @@ export default function Usuario(state = initialState, action) {
   
   switch (action.type) {
     case Types.GET_LOGIN:
-      return { loading: false, };
-    case Types.GET_LOGIN_SUCCESS:
-      return { data: action.payload.data, erro: '' };
-    case Types.GET_LOGIN_FAILED:
-      return { data: {}, erro: action.payload.erro };
+      return { ...state, loading: true };
+    case Types.LOGIN_SUCCESS:
+      return { data: action.payload.data, erro: '', loading: false };
+    case Types.LOGIN_FAILED:
+      return { data: {}, erro: action.payload.erro, loading: false };
+    case Types.POST_LOGIN:
+      return { ...state, loading: true };
     default:
       return state;
   }
@@ -36,14 +40,22 @@ export const Creators = {
       senha,
     },
   }),
-  getUserLoginSuccess: data => ({
-    type: Types.GET_LOGIN_SUCCESS,
+  userLoginSuccess: data => ({
+    type: Types.LOGIN_SUCCESS,
     payload: { 
       data,
     },
   }),
-  getUserLoginFailed: erro => ({
-    type: Types.GET_LOGIN_FAILED,
+  userLoginFailed: erro => ({
+    type: Types.LOGIN_FAILED,
     payload: { erro },
+  }),
+  postUserLogin: (login, senha, user) => ({
+    type: Types.POST_LOGIN,
+    payload: { 
+      login,
+      senha,
+      user,
+    },
   }),
 };
